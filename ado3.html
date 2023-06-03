@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>JavaScript</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="lib/testefw.css">
+        <link rel="stylesheet" href="ado3.css">
+        <script src="lib/utils.js" defer></script>
+        <script src="lib/testefw.js" defer></script>
+        <script src="ado3-auxiliar.js" defer></script>
+        <script src="ado3-teste.js" defer></script>
+        <script src="ado3.js" defer></script>
+        <script>
+            "use strict";
+
+            function limparForm10() {
+                document.querySelectorAll(".ex10 input[type='text']").forEach(e => e.value = "");
+            }
+
+            function limparForm12() {
+                document.querySelectorAll(".ex12 input[type='text']").forEach(e => e.value = "");
+                document.getElementById("pokemon-foto").src = "https://cdn-icons-png.flaticon.com/256/4467/4467515.png";
+            }
+        </script>
+    </head>
+    <body>
+        <h1 class="testefw-titulo">ADO 3</h1>
+        <address class="testefw-versao">Versão 1º semestre 2023</address>
+        <div id="testefw-form-executar"></div>
+
+        <div class="formzinho ex10">
+            <h1>Formulário para o exercício 10</h1>
+            <div>
+                <p>
+                    <label for="cep">CEP:</label>
+                    <input type="text" id="cep" class="grande">
+                </p>
+                <p class="ex10e12-botao">
+                    <label for="botao-cadastrar">&nbsp;</label>
+                    <button type="button" id="botao-cadastrar" onclick="pesquisarCepDOM();">Pesquisar</button>
+                </p>
+                <p class="ex10e12-botao">
+                    <label for="botao-limpar">&nbsp;</label>
+                    <button type="button" id="botao-limpar" onclick="limparForm10();">Limpar campos</button>
+                </p>
+            </div>
+            <p>
+                <label for="resultado-cep">Resultado:</label>
+                <input type="text" id="resultado-cep" readonly class="grande">
+            </p>
+        </div>
+
+        <div class="formzinho ex12">
+            <h1>Formulário para o exercício 12</h1>
+            <div>
+                <p>
+                    <label for="pokemon-pesquisa">Pesquisa:</label>
+                    <input type="text" id="pokemon-pesquisa" class="grande">
+                </p>
+                <p>
+                    <p class="ex10e12-botao">
+                        <label for="botao-cadastrar">&nbsp;</label>
+                        <button type="button" id="botao-cadastrar" onclick="pesquisarPokemonDOM();">Pesquisar</button>
+                    </p>
+                    <p class="ex10e12-botao">
+                        <label for="botao-limpar">&nbsp;</label>
+                        <button type="button" id="botao-limpar" onclick="limparForm12();">Limpar campos</button>
+                    </p>
+                </p>
+            </div>
+            <div>
+                <p>
+                    <label for="pokemon-nome">Nome:</label>
+                    <input type="text" id="pokemon-nome" readonly class="grande">
+                </p>
+                <p>
+                    <label for="pokemon-numero">Número:</label>
+                    <input type="text" id="pokemon-numero" readonly>
+                </p>
+            </div>
+            <div>
+                <label for="pokemon-numero">Foto:</label>
+                <img id="pokemon-foto" src="https://cdn-icons-png.flaticon.com/256/4467/4467515.png" height="256" style="border: 1px solid black;">
+            </div>
+        </div>
+    </body>
+</html>
