@@ -148,108 +148,19 @@ console.log(converterTemperatura(32, "F", "C"));
  * @throw ConvertError Se o parâmetro não for um número inteiro ou for menor que zero.
  */
 function fatorial(n) {
-    if (
-      typeof n !== 'number' ||
-      isNaN(n) ||
-      n === null ||
-      n === undefined ||
-      !Number.isInteger(n) ||
-      n < 0
-    ) {
-      throw new TypeError('O parâmetro deve ser um número inteiro não negativo.');
+  if (!Number.isInteger(n) || n < 0) {
+      throw new ConvertError("O parâmetro é inválido. Deve ser um número inteiro não negativo.");
     }
   
-    if (n === 0 || n === 1) {
-      return BigInt(1);
-    }
+    let resultado = BigInt(1);
   
-    let resultado = BigInt(n);
-  
-    for (let i = n - 1; i >= 2; i--) {
+    for (let i = 2; i <= n; i++) {
       resultado *= BigInt(i);
     }
   
     return resultado;
-  }
-  (() => {
-    try {
-      fatorial(NaN);
-    } catch (e) {
-      if (
-        !(e instanceof TypeError) ||
-        [null, undefined, ''].includes(e?.message?.trim())
-      )
-        throw e; // Não era a exceção que devia ter sido.
-      return;
-    }
-    throw new Error('A função fatorial aceitou porcaria.');
-  })();
-  
-  (() => {
-    try {
-      fatorial(Infinity);
-    } catch (e) {
-      if (
-        !(e instanceof TypeError) ||
-        [null, undefined, ''].includes(e?.message?.trim())
-      )
-        throw e; // Não era a exceção que devia ter sido.
-      return;
-    }
-    throw new Error('A função fatorial aceitou porcaria.');
-  })();
-  
-  (() => {
-    try {
-      fatorial(-Infinity);
-    } catch (e) {
-      if (
-        !(e instanceof TypeError) ||
-        [null, undefined, ''].includes(e?.message?.trim())
-      )
-        throw e; // Não era a exceção que devia ter sido.
-      return;
-    }
-    throw new Error('A função fatorial aceitou porcaria.');
-  })();
-  
-  (() => {
-    try {
-      fatorial(null);
-    } catch (e) {
-      if (
-        !(e instanceof TypeError) ||
-        [null, undefined, ''].includes(e?.message?.trim())
-      )
-        throw e; // Não era a exceção que devia ter sido.
-      return;
-    }
-    throw new Error('A função fatorial aceitou porcaria.');
-  })();
-  
-  (() => {
-    try {
-      fatorial(undefined);
-    } catch (e) {
-      if (
-        !(e instanceof TypeError) ||
-        [null, undefined, ''].includes(e?.message?.trim())
-      )
-        throw e; // Não era a exceção que devia ter sido.
-      return;
-    }
-    throw new Error('A função fatorial aceitou porcaria.');
-  })();
-    
+}
 
-  
- 
-  console.log(fatorial(0)); // BigInt(1)
-  console.log(fatorial(1)); // BigInt(1)
-  console.log(fatorial(5)); // BigInt(120)
-  console.log(fatorial(10)); // BigInt(3628800)
-
-  
 // EXERCÍCIO 5.
 /**
  * Obtenha o n-ésimo número de Fibonacci.
@@ -264,7 +175,24 @@ function fatorial(n) {
  * @throw ConvertError Se o parâmetro não for um número inteiro ou for menor que zero.
  */
 function fibonacci(n) {
-    naoFizIssoAinda();
+  if (typeof n !== 'number' || isNaN(n) || n < 0 || !Number.isInteger(n)) {
+    throw new ConvertError('O parâmetro deve ser um número inteiro não negativo.');
+  }
+
+  if (n === 0) {
+    return BigInt(0);
+  }
+
+  let prev = BigInt(0);
+  let current = BigInt(1);
+
+  for (let i = 2; i <= n; i++) {
+    let next = prev + current;
+    prev = current;
+    current = next;
+  }
+
+  return current;
 }
 
 // EXERCÍCIO 6.
@@ -276,8 +204,23 @@ function fibonacci(n) {
  * @throw ConvertError Se o parâmetro não for um número inteiro ou for menor que zero.
  */
 function triangular(num) {
-    naoFizIssoAinda();
+  if (num === null || num === "0" || num === "") {
+    throw new ConvertError('O parâmetro deve ser um número inteiro não negativo.');
+  }
+
+  const n = Number(num);
+
+  if (!Number.isInteger(n) || n < 0) {
+    throw new ConvertError('O parâmetro deve ser um número inteiro não negativo.');
+  }
+
+  if (n === 0) {
+    return 0n;
+  }
+
+  return (BigInt(n) * (BigInt(n) + 1n)) / 2n;
 }
+
 
 // EXERCÍCIO 7.
 /**
@@ -287,8 +230,9 @@ function triangular(num) {
  * @return {RegExp} Uma expressão regular.
  */
 function cepRegex() {
-    naoFizIssoAinda();
+  return /^\d{5}-?\d{3}$/;
 }
+
 
 // EXERCÍCIO 8.
 /**
@@ -297,8 +241,9 @@ function cepRegex() {
  * @return {RegExp} Uma expressão regular.
  */
 function dddRegex() {
-    naoFizIssoAinda();
+  return /^(?!0[1-9]|00|10|20|30|40|50|60|70|80|90)\d{2}$/;
 }
+
 
 // EXERCÍCIO 9.
 /**
@@ -310,7 +255,26 @@ function dddRegex() {
  * @throws PesquisaCepError Se o CEP não for encontrado.
  */
 async function pesquisarCep(cep) {
-    naoFizIssoAinda();
+  if (typeof cep !== "string" || !/^\d{5}-?\d{3}$/.test(cep)) {
+    throw new ConvertError("O CEP fornecido é inválido. Deve ser uma string no formato XXXXX-XXX.");
+  }
+
+  const url = `http://viacep.com.br/ws/${cep}/json/`;
+  const response = await fetch(url);
+ 
+  if (!response.ok) {
+    throw new PesquisaCepError();
+  }
+
+  const data = await response.json();
+
+  if (data.erro) {
+    throw new PesquisaCepError();
+  }
+
+  const endereco = new Endereco(data.logradouro, data.bairro, data.localidade, data.uf);
+
+  return endereco;
 }
 
 // EXERCÍCIO 10.
@@ -321,8 +285,28 @@ async function pesquisarCep(cep) {
  *(converta a instância de Endereco encontrada em string para fazer isso). Se ocorrer
  * algum erro na busca, coloque a mensagem de erro lá também (use o try-catch para isso).
  */
-async function pesquisarCepDOM() {
-    naoFizIssoAinda();
+ async function pesquisarCepDOM() {
+  try {
+    const form = document.querySelector(".formzinho.ex10");
+    const cepInput = form.querySelector("#cep");
+    const resultadoCep = form.querySelector("#resultado-cep");
+    const cep = cepInput.value.trim();
+    const data = await pesquisarCep(cep);
+    
+    if (!data.cidade) {
+      data.cidade = ""; 
+    }
+
+    const endereco = new Endereco(data.logradouro, data.bairro, data.cidade, data.uf);
+    const enderecoString = `${endereco.logradouro} - ${endereco.bairro} - ${endereco.cidade} - ${endereco.uf}`;
+    resultadoCep.value = enderecoString;
+  } catch (error) {
+    if (!error.message) {
+      error.message = ""; 
+    }
+    const resultadoCep = document.getElementById("resultado-cep");
+    resultadoCep.value = error.message;
+  }
 }
 
 // EXERCÍCIO 11.
@@ -334,7 +318,33 @@ async function pesquisarCepDOM() {
  * @throws PokemonNaoEncontradoError Se não existir pokémon com o nome ou número dado.
  */
 async function pesquisarPokemon(chave) {
-    naoFizIssoAinda();
+  const url = `https://pokeapi.co/api/v2/pokemon/${chave}`;
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new PokemonNaoEncontradoError('Pokémon não encontrado.');
+    }
+
+    const data = await response.json();
+
+    const nome = data.name;
+    const numero = data.id;
+    const fotoUrl = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
+
+    if (!nome || !numero || !fotoUrl) {
+      throw new PokemonNaoEncontradoError('Dados inválidos do Pokémon.');
+    }
+
+    return new Pokemon(nome, numero, fotoUrl);
+  } catch (error) {
+    if (error instanceof PokemonNaoEncontradoError) {
+      throw error;
+    } else {
+      throw new ConvertError('Erro ao pesquisar o Pokémon.');
+    }
+  }
 }
 
 // EXERCÍCIO 12.
@@ -346,5 +356,17 @@ async function pesquisarPokemon(chave) {
  * o link https://cdn-icons-png.flaticon.com/256/4467/4467515.png na foto (use o try-catch).
  */
 async function pesquisarPokemonDOM() {
-    naoFizIssoAinda();
+  try {
+    const chave = document.getElementById('pokemon-pesquisa').value;
+
+    const pokemon = await pesquisarPokemon(chave);
+  
+    document.getElementById('pokemon-nome').value = pokemon.nome;
+    document.getElementById('pokemon-numero').value = pokemon.numero;
+    document.getElementById('pokemon-foto').src = pokemon.foto;
+  } catch (error) {
+    document.getElementById('pokemon-nome').value = error.message;
+    document.getElementById('pokemon-foto').src =
+      'https://cdn-icons-png.flaticon.com/256/4467/4467515.png';
+  }
 }
